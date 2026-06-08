@@ -1,0 +1,40 @@
+{
+  "name": "vite-plugin-px2unit",
+  "description": "vite-plugin-px2unit",
+  "author": "Kriac",
+  "license": "MIT",
+  "type": "module",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Kriac/vite-plugin-px2unit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kriac/vite-plugin-px2unit.git"
+  },
+  "keywords": [
+    "vite-plugin-px2unit"
+  ],
+  "scripts": {
+    "lint": "vue-tsc -b --noEmit",
+    "build": "tsdown",
+    "release": "npm publish --access public"
+  },
+  "dependencies": {
+    "postcss-value-parser": "4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.0.10",
+    "postcss": "8.5.15",
+    "tsdown": "0.22.0",
+    "vue-tsc": "3.2.1"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  }
+}

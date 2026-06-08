@@ -1,0 +1,22 @@
+{
+  "name": "demo",
+  "private": true,
+  "scripts": {
+    "lint": "vue-tsc -b --noEmit",
+    "dev": "uni -p mp-weixin",
+    "build": "uni build -p mp-weixin"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-4080720251210001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-4080720251210001",
+    "@tdesign/uniapp": "0.9.0",
+    "vue": "3.4.21"
+  },
+  "devDependencies": {
+    "@dcloudio/vite-plugin-uni": "3.0.0-4080720251210001",
+    "sass": "1.78.0",
+    "vite-plugin-px2unit": "workspace:*",
+    "vite": "5.2.8",
+    "vue-tsc": "3.2.1"
+  }
+}

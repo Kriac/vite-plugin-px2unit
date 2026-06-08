@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - "@tdesign/uniapp"
+  - core-js
+  - esbuild
+  - vue-demi

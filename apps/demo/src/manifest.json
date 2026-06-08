@@ -1,0 +1,13 @@
+{
+  "name": "demo",
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": true,
+      "minified": true
+    },
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "vueVersion": "3",
+  "transformPx": false
+}

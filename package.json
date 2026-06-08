@@ -1,0 +1,50 @@
+{
+  "name": "px2unit",
+  "private": true,
+  "packageManager": "pnpm@10.25.0",
+  "scripts": {
+    "prepare": "husky",
+    "commit": "czg",
+    "format": "prettier --write .",
+    "lint": "pnpm -r lint",
+    "lint:es": "eslint --fix",
+    "lint:style": "stylelint **/*.{vue,css,scss} --fix",
+    "dev:demo": "pnpm -F demo dev",
+    "build:pkg": "pnpm -F vite-plugin-px2unit build",
+    "release:pkg": "pnpm build:pkg && pnpm -F vite-plugin-px2unit release"
+  },
+  "devDependencies": {
+    "@kriac/lint-kit": "0.3.0",
+    "commitlint": "20.3.0",
+    "czg": "1.13.0",
+    "eslint": "9.39.4",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.7.2",
+    "stylelint": "17.8.0",
+    "typescript": "5.8.2"
+  },
+  "config": {
+    "commitizen": {
+      "czConfig": "commitlint.config.mjs"
+    }
+  },
+  "lint-staged": {
+    "*.vue": [
+      "eslint --fix",
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yaml,md}": [
+      "prettier --write"
+    ]
+  }
+}
