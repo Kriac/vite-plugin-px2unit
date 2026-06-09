@@ -1,41 +1,40 @@
-import type { Plugin, UserConfig } from "vite";
+import type { Plugin } from "vite";
+import type { PostcssPlugin, Px2UnitMatcher, Px2UnitOptions } from "./types";
 import valueParser from "postcss-value-parser";
-
-type PostcssConfig = Exclude<
-  NonNullable<NonNullable<UserConfig["css"]>["postcss"]>,
-  string
->;
-type PostcssPlugin = NonNullable<PostcssConfig["plugins"]>[number];
-
-/** 排除路径的匹配器，支持字符串、正则表达式和函数 */
-export type Px2UnitExclude = ((source: string) => boolean) | RegExp | string;
-
-/** 插件选项 */
-export interface Px2UnitOptions {
-  exclude?: Px2UnitExclude[];
-  precision?: number;
-  to: string;
-  transform: (px: number) => number;
-}
 
 function normalizePath(value: string) {
   return value.replaceAll("\\", "/");
 }
 
-function shouldExclude(source: string | undefined, options: Px2UnitOptions) {
-  if (!source) {
-    return false;
-  }
-  const normalizedSource = normalizePath(source);
-  return (options.exclude || []).some((matcher) => {
+function matchesValue(
+  value: string,
+  matchers: Px2UnitMatcher[] | undefined,
+  matchString: (matcher: string, value: string) => boolean,
+) {
+  return (matchers || []).some((matcher) => {
     if (typeof matcher === "string") {
-      return normalizedSource.includes(normalizePath(matcher));
+      return matchString(matcher, value);
     }
     if (matcher instanceof RegExp) {
-      return matcher.test(normalizedSource);
+      return matcher.test(value);
     }
-    return matcher(normalizedSource);
+    return matcher(value);
   });
+}
+
+function shouldExcludeFile(source: string, options: Px2UnitOptions) {
+  const normalizedSource = normalizePath(source);
+  return matchesValue(normalizedSource, options.exclude, (matcher, value) =>
+    value.includes(normalizePath(matcher)),
+  );
+}
+
+function shouldIgnoreProperty(property: string, options: Px2UnitOptions) {
+  return matchesValue(
+    property,
+    options.ignoreProperties,
+    (matcher, value) => matcher === value,
+  );
 }
 
 function applyPrecision(value: number, precision: number | undefined) {
@@ -47,7 +46,7 @@ function applyPrecision(value: number, precision: number | undefined) {
 }
 
 /**
- * 将 css 声明中的 px 单位转换为指定的单位。
+ * 将 CSS 声明中的 px 单位转换为指定的单位
  */
 export function transformPxValue(value: string, options: Px2UnitOptions) {
   const parsedValue = valueParser(value);
@@ -77,10 +76,10 @@ export function createPostcssPlugin(options: Px2UnitOptions): PostcssPlugin {
     postcssPlugin: "postcss-px2unit",
     Once(css) {
       const filePath = css.source?.input.file;
-      isExcludeFile = shouldExclude(filePath, options);
+      isExcludeFile = !!filePath && shouldExcludeFile(filePath, options);
     },
     Declaration(decl) {
-      if (isExcludeFile) {
+      if (isExcludeFile || shouldIgnoreProperty(decl.prop, options)) {
         return;
       }
       decl.value = transformPxValue(decl.value, options);
@@ -101,10 +100,7 @@ export function px2unit(options: Px2UnitOptions): Plugin {
       if (typeof postcssOptions === "string") {
         throw new Error("PostCSS plugins must be configured as an array.");
       }
-      postcssOptions.plugins = [
-        ...(postcssOptions.plugins ?? []),
-        postcssPlugin,
-      ];
+      (postcssOptions.plugins ??= []).push(postcssPlugin);
     },
   };
 }
