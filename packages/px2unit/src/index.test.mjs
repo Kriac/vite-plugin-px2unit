@@ -48,9 +48,14 @@ assert.equal(
 const plugin = createPostcssPlugin({
   ...options,
   exclude: [/node_modules[\\/]vant/],
+  ignoreProperties: [
+    "border-width",
+    /^font-/,
+    (property) => property === "height",
+  ],
 });
 
-// 忽略转换
+// 忽略指定文件
 const ignoredResult = await postcss([plugin]).process(
   ".button { width: 10px; }",
   {
@@ -59,11 +64,14 @@ const ignoredResult = await postcss([plugin]).process(
 );
 assert.equal(ignoredResult.css, ".button { width: 10px; }");
 
-// 正常转换
-const transformedResult = await postcss([plugin]).process(
-  ".button { width: 10px; }",
+// 忽略指定 CSS 属性
+const ignoredPropertiesResult = await postcss([plugin]).process(
+  ".button { width: 10px; height: 12px; border-width: 1px; font-size: 14px; margin: 8px; }",
   {
     from: "src/components/button.css",
   },
 );
-assert.equal(transformedResult.css, ".button { width: 20rpx; }");
+assert.equal(
+  ignoredPropertiesResult.css,
+  ".button { width: 20rpx; height: 12px; border-width: 1px; font-size: 14px; margin: 16rpx; }",
+);

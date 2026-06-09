@@ -8,6 +8,7 @@ export default defineConfig(() => {
       px2unit({
         to: "rpx",
         transform: (px) => px * 2,
+        ignoreProperties: ["font-size", "line-height"],
       }),
       uni(),
     ],
